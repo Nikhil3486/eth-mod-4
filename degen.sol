@@ -37,6 +37,10 @@ contract DegenToken is ERC20, Ownable(msg.sender) {
         _burn(msg.sender, amount);
         emit BurnToken(msg.sender, amount);
     }
+    function transfer(address to, uint256 amount) public override returns (bool) {
+        _transfer(_msgSender(), to, amount);
+        return true;
+    }
 
     function addItem(string memory itemName, uint itemPrice) public{
         itemCount++;
