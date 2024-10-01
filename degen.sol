@@ -54,10 +54,17 @@ contract DegenToken is ERC20, Ownable(msg.sender) {
         return allItems;
     }
 
-     function redeem(uint rewardCategory) public {
-        uint requiredAmount = rewardCategory * 1;
-        require(balanceOf(msg.sender)>=requiredAmount,"Insufficient Amount");
-        burn(requiredAmount);
-        emit RedeemToken(msg.sender, rewardCategory);
-    }
+     function redeem(uint itemId) external {
+    require(itemId > 0 && itemId <= itemCount, "Invalid item ID");
+    Item memory redeemedItem = items[itemId];
+
+    require(balanceOf(msg.sender) >= redeemedItem.itemPrice, "Insufficient Balance to redeem");
+    require(!redeemedItems[msg.sender][itemId], "Item already redeemed");
+
+    // Transfer the item price to the owner
+    _transfer(msg.sender, owner(), redeemedItem.itemPrice);
+    redeemedItems[msg.sender][itemId] = true;
+
+    emit ItemRedeemed(msg.sender, itemId, redeemedItem.itemName, redeemedItem.itemPrice);
+     }
 }
